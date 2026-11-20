@@ -1,0 +1,26 @@
+.cuadrito_login{
+	padding: 80px;
+	background-color: rgba(255, 255, 255, 0.5);
+	border: white solid 3px;
+	border-radius: 15px;
+}
+body{
+	background-color: #17AD9C;
+}
+.navbar-brand{/*este es para que el area del logo maneje su espacio libre*/
+	padding: 0;
+	display: flex;
+	align-items: center;
+}
+.navbar-brand img{/*este es para que forsse a que el tamaño real dela imagen para que se mire grande y clara */
+	height: 100px;
+	width: auto;
+	max-height: none;
+}
+.container{
+	padding: 80px;
+	max-width: 900px;
+	background-color: rgba(247, 228, 236, 0.9);
+	border: white solid 3px;
+	border-radius: 15px;
+}
