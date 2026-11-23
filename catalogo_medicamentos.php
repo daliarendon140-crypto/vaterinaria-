@@ -2,10 +2,30 @@
 session_start();
 
 include('menu.php');
-include('clases/Medicamento.php');
 
-$clase_medicamentos = new Medicamento();
-$datos = $clase_medicamentos->mostrarTodos();
+$datos = [];
+$columnaId = "id";
+
+try {
+    $conexion = new PDO('mysql:host=localhost;dbname=veterinaria;charset=utf8', 'root', '');
+    $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $estructura = $conexion->query("SHOW COLUMNS FROM medicamentos")->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($estructura)) {
+        $columnaId = $estructura[0]['Field'];
+        foreach ($estructura as $col) {
+            if (($col['Key'] ?? '') === 'PRI') {
+                $columnaId = $col['Field'];
+                break;
+            }
+        }
+    }
+
+    $consulta = $conexion->query("SELECT * FROM medicamentos");
+    $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "<div class='container mt-4'><div class='alert alert-danger'>Error: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "</div></div>";
+}
 ?>
 
 <style>
@@ -53,6 +73,7 @@ $datos = $clase_medicamentos->mostrarTodos();
         <?php if (!empty($datos)): ?>
             <?php foreach ($datos as $fila): ?>
                 <?php
+                    $idMed = (int)($fila[$columnaId] ?? 0);
                     $nombre = htmlspecialchars($fila['nombre'] ?? 'Medicamento', ENT_QUOTES, 'UTF-8');
                     $descripcion = htmlspecialchars($fila['descripcion'] ?? 'Sin descripción disponible.', ENT_QUOTES, 'UTF-8');
                     $precio = htmlspecialchars($fila['precio'] ?? '0.00', ENT_QUOTES, 'UTF-8');
@@ -78,8 +99,16 @@ $datos = $clase_medicamentos->mostrarTodos();
                             </p>
                         </div>
 
-                        <div class="caja-imagen-med">
-                            <img src="<?php echo $rutaImagen; ?>" alt="<?php echo $nombre; ?>">
+                        <div>
+                            <div class="caja-imagen-med">
+                                <img src="<?php echo $rutaImagen; ?>" alt="<?php echo $nombre; ?>">
+                            </div>
+
+                            <div class="d-flex justify-content-between gap-2 mt-3">
+                                <button type="button" class="btn btn-primary btn-sm flex-fill fw-semibold">Ver</button>
+                                <a href="editar_medicamento.php?id=<?php echo $idMed; ?>" class="btn btn-warning btn-sm flex-fill fw-semibold">Editar</a>
+                                <button type="button" class="btn btn-danger btn-sm flex-fill fw-semibold">Eliminar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
